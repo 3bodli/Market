@@ -3,70 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>نظام POS - الماركت</title>
+    <title>POS - نقطة البيع</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Font Awesome 6 Free CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
 <div class="app-container">
-    <!-- رأس الصفحة -->
     <header class="main-header">
-        <h1><i class="fas fa-store"></i> نظام الماركت المتكامل (POS)</h1>
+        <h1><i class="fas fa-cash-register"></i> نقطة البيع</h1>
         <div class="header-buttons">
-            <button id="resetDayBtnHeader" class="btn-icon"><i class="fas fa-undo-alt"></i> مسح اليوم</button>
+            <a href="inventory.html" class="btn-icon"><i class="fas fa-boxes"></i> إدارة المنتجات</a>
+            <button id="resetDayBtn" class="btn-icon"><i class="fas fa-undo-alt"></i> مسح اليوم</button>
         </div>
     </header>
 
     <div class="pos-main">
-        <!-- القسم الأيمن: البيع وإضافة المنتجات -->
+        <!-- قسم البيع -->
         <div class="sales-section">
             <div class="card input-card">
-                <h3><i class="fas fa-plus-circle"></i> إضافة منتج للفاتورة</h3>
+                <h3><i class="fas fa-barcode"></i> مسح الباركود أو البحث</h3>
                 <div class="input-group">
-                    <input type="text" id="productName" placeholder="اسم المنتج (مثال: خبز، حليب)" autocomplete="off">
-                    <input type="number" id="productPrice" placeholder="سعر البيع" autocomplete="off">
-                    <button id="addBtn" class="btn-primary"><i class="fas fa-cart-plus"></i> أضف للسلة</button>
+                    <input type="text" id="barcodeInput" placeholder="امسح الباركود أو اكتب رقم المنتج" autocomplete="off">
+                    <button id="searchBtn" class="btn-primary"><i class="fas fa-search"></i> بحث</button>
+                </div>
+                <div id="productInfo" class="product-info hidden">
+                    <h4>المنتج المختار:</h4>
+                    <p><strong>الاسم:</strong> <span id="dispName"></span></p>
+                    <p><strong>سعر البيع:</strong> <span id="dispPrice"></span> ل.س</p>
+                    <p><strong>المتوفر:</strong> <span id="dispStock"></span></p>
+                    <div class="quantity-group">
+                        <label>الكمية:</label>
+                        <input type="number" id="quantityInput" value="1" min="1">
+                        <button id="addToCartBtn" class="btn-success"><i class="fas fa-cart-plus"></i> أضف للسلة</button>
+                    </div>
                 </div>
             </div>
 
             <div class="card cart-card">
-                <h3><i class="fas fa-shopping-cart"></i> سلة المشتريات الحالية</h3>
+                <h3><i class="fas fa-shopping-cart"></i> سلة المشتريات</h3>
                 <div class="table-responsive">
-                    <table class="cart-table" id="cartTable">
+                    <table class="cart-table">
                         <thead>
-                            <tr><th>المنتج</th><th>السعر</th><th>الكمية</th><th>الإجمالي</th><th></th></tr>
+                            <tr><th>المنتج</th><th>سعر البيع</th><th>الكمية</th><th>التكلفة</th><th>الربح</th><th></th></tr>
                         </thead>
-                        <tbody id="cartBody">
-                            <tr><td colspan="5">⚠️ السلة فارغة، أضف منتجات</td></tr>
-                        </tbody>
+                        <tbody id="cartBody"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- القسم الأيسر: الإجماليات والأرباح -->
+        <!-- قسم الإجماليات -->
         <div class="summary-section">
             <div class="card totals-card">
                 <h3><i class="fas fa-chart-line"></i> ملخص الفاتورة</h3>
                 <div class="total-row"><span>💰 إجمالي المبيعات:</span><span id="totalSalesSpan">0.00</span></div>
-                <div class="total-row"><span>🧾 الضريبة (10%):</span><span id="taxSpan">0.00</span></div>
-                <div class="total-row profit-row"><span>✨ صافي الربح (بعد الضريبة):</span><span id="netProfitSpan">0.00</span></div>
+                <div class="total-row profit-row"><span>✨ إجمالي الربح:</span><span id="totalProfitSpan">0.00</span></div>
                 <div class="total-row final-row"><span>💵 المطلوب من العميل:</span><span id="finalTotalSpan">0.00</span></div>
-                <button id="checkoutBtn" class="btn-success"><i class="fas fa-check-circle"></i> إنهاء البيع وطباعة الفاتورة</button>
+                <button id="checkoutBtn" class="btn-success"><i class="fas fa-check-circle"></i> إنهاء البيع</button>
             </div>
             
             <div class="card sold-card">
-                <h3><i class="fas fa-clipboard-list"></i> ماذا بعنا اليوم؟</h3>
-                <div id="soldItemsList" class="sold-list">
-                    <p class="empty-msg">لا توجد مبيعات مسجلة حتى الآن</p>
-                </div>
-                <button id="resetDayBtn" class="btn-warning"><i class="fas fa-trash-alt"></i> مسح مبيعات اليوم</button>
+                <h3><i class="fas fa-clipboard-list"></i> مبيعات اليوم</h3>
+                <div id="soldItemsList" class="sold-list"></div>
             </div>
         </div>
     </div>
 </div>
-
 <script src="script.js"></script>
 </body>
 </html>

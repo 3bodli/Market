@@ -1,9 +1,9 @@
-// ==========  البيانات الأساسية  ==========
+// ========== البيانات الأساسية ==========
 let products = [];
 let currentCart = [];
 let dailySales = [];
 
-// ==========  تحميل البيانات المحفوظة  ==========
+// ========== تحميل البيانات المحفوظة ==========
 function loadData() {
     const savedProducts = localStorage.getItem('pos_products');
     const savedCart = localStorage.getItem('pos_cart');
@@ -25,7 +25,7 @@ function saveProducts() { localStorage.setItem('pos_products', JSON.stringify(pr
 function saveCart() { localStorage.setItem('pos_cart', JSON.stringify(currentCart)); }
 function saveDaily() { localStorage.setItem('pos_dailySales', JSON.stringify(dailySales)); }
 
-// ==========  إدارة المنتجات  ==========
+// ========== إدارة المنتجات ==========
 function addOrUpdateProduct(barcode, name, cost, price, stock) {
     if (!barcode || !name || cost <= 0 || price <= 0) {
         showFormMessage('املأ جميع الحقول بشكل صحيح', 'red');
@@ -56,7 +56,7 @@ function renderProductsTable() {
     if (!tbody) return;
     const search = document.getElementById('searchProducts')?.value.toLowerCase() || '';
     let filtered = products.filter(p => p.name.toLowerCase().includes(search) || p.barcode.includes(search));
-    if (!filtered.length) { tbody.innerHTML = '<td><td colspan="6">لا توجد منتجات</td></tr>'; return; }
+    if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="6">لا توجد منتجات</td><tr>'; return; }
     tbody.innerHTML = filtered.map(p => `
         <tr>
             <td>${escapeHtml(p.barcode)}</td><td>${escapeHtml(p.name)}</td>
@@ -67,7 +67,12 @@ function renderProductsTable() {
     document.querySelectorAll('.delete-prod').forEach(btn => btn.addEventListener('click', () => deleteProduct(btn.dataset.barcode)));
 }
 
-// ==========  شبكة المنتجات الحديثة  ==========
+function showFormMessage(msg, color) {
+    const div = document.getElementById('formMessage');
+    if (div) { div.innerText = msg; div.style.color = color === 'red' ? '#ef476f' : '#06d6a0'; setTimeout(() => div.innerText = '', 2500); }
+}
+
+// ========== شبكة المنتجات الحديثة ==========
 function renderModernProductsGrid(filter = '') {
     const grid = document.getElementById('productsGrid');
     if (!grid) return;
@@ -96,7 +101,7 @@ function getIcon(name) {
     return 'fa-box';
 }
 
-// ==========  السلة  ==========
+// ========== السلة ==========
 function addToCart(barcode, qty = 1) {
     const product = products.find(p => p.barcode === barcode);
     if (!product || product.stock < qty) { alert('المنتج غير متوفر'); return; }
@@ -145,8 +150,8 @@ function renderCartModern() {
     const container = document.getElementById('cartItemsContainer');
     const badge = document.getElementById('cartCount');
     if (!container) return;
-    if (!currentCart.length) { container.innerHTML = `<div class="empty-cart"><i class="fas fa-box-open"></i><p>السلة فارغة</p></div>`; if(badge) badge.innerText = '0'; return; }
-    if(badge) badge.innerText = currentCart.reduce((s,i)=>s+i.quantity,0);
+    if (!currentCart.length) { container.innerHTML = `<div class="empty-cart"><i class="fas fa-box-open"></i><p>السلة فارغة</p><span>اضغط على أي منتج لإضافته</span></div>`; if (badge) badge.innerText = '0'; return; }
+    if (badge) badge.innerText = currentCart.reduce((s, i) => s + i.quantity, 0);
     container.innerHTML = currentCart.map((item, idx) => `
         <div class="cart-item">
             <div class="cart-item-info"><div class="cart-item-name">${escapeHtml(item.name)}</div><div class="cart-item-price">${item.price.toFixed(2)} ل.س</div></div>
@@ -158,17 +163,17 @@ function renderCartModern() {
 }
 
 function updateTotalsModern() {
-    const total = currentCart.reduce((s,i)=>s+i.totalPrice,0);
-    const profit = currentCart.reduce((s,i)=>s+i.totalProfit,0);
-    if(document.getElementById('totalSalesSpan')) document.getElementById('totalSalesSpan').innerText = total.toFixed(2);
-    if(document.getElementById('totalProfitSpan')) document.getElementById('totalProfitSpan').innerText = profit.toFixed(2);
-    if(document.getElementById('finalTotalSpan')) document.getElementById('finalTotalSpan').innerText = total.toFixed(2);
+    const total = currentCart.reduce((s, i) => s + i.totalPrice, 0);
+    const profit = currentCart.reduce((s, i) => s + i.totalProfit, 0);
+    if (document.getElementById('totalSalesSpan')) document.getElementById('totalSalesSpan').innerText = total.toFixed(2);
+    if (document.getElementById('totalProfitSpan')) document.getElementById('totalProfitSpan').innerText = profit.toFixed(2);
+    if (document.getElementById('finalTotalSpan')) document.getElementById('finalTotalSpan').innerText = total.toFixed(2);
 }
 
 function checkout() {
     if (!currentCart.length) { alert('السلة فارغة'); return; }
-    const total = currentCart.reduce((s,i)=>s+i.totalPrice,0);
-    const profit = currentCart.reduce((s,i)=>s+i.totalProfit,0);
+    const total = currentCart.reduce((s, i) => s + i.totalPrice, 0);
+    const profit = currentCart.reduce((s, i) => s + i.totalProfit, 0);
     dailySales.push({ date: new Date().toLocaleString('ar-EG'), items: JSON.parse(JSON.stringify(currentCart)), total, profit });
     saveDaily();
     currentCart = []; saveCart();
@@ -184,18 +189,66 @@ function renderSoldItemsModern() {
 }
 
 function resetDaily() {
-    if (confirm('مسح كل مبيعات اليوم والسلة الحالية؟')) { dailySales = []; currentCart = []; saveDaily(); saveCart(); renderCartModern(); updateTotalsModern(); renderSoldItemsModern(); if(document.getElementById('productsGrid')) renderModernProductsGrid(''); }
+    if (confirm('مسح كل مبيعات اليوم والسلة الحالية؟')) { dailySales = []; currentCart = []; saveDaily(); saveCart(); renderCartModern(); updateTotalsModern(); renderSoldItemsModern(); if (document.getElementById('productsGrid')) renderModernProductsGrid(''); }
 }
 
-function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' })[m]); }
-function showFormMessage(msg, color) { const div = document.getElementById('formMessage'); if(div){ div.innerText=msg; div.style.color=color==='red'?'#ef476f':'#06d6a0'; setTimeout(()=>div.innerText='',2500); } }
+// ========== دعم قارئ الباركود USB والموبايل ==========
+function initBarcodeScanner() {
+    const scanInput = document.getElementById('barcodeScannerInput');
+    if (!scanInput) return;
+    scanInput.focus();
+    const manualBtn = document.getElementById('manualScanBtn');
+    if (manualBtn) {
+        manualBtn.addEventListener('click', () => {
+            const barcode = scanInput.value.trim();
+            if (barcode) processScannedBarcode(barcode);
+            else showScanFeedback('الرجاء إدخال الباركود أو مسحه', 'error');
+        });
+    }
+    scanInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); const barcode = scanInput.value.trim(); if (barcode) processScannedBarcode(barcode); }
+    });
+    scanInput.addEventListener('blur', () => { setTimeout(() => scanInput.focus(), 100); });
+}
 
-// ==========  بدء التشغيل  ==========
+function processScannedBarcode(barcode) {
+    const scanInput = document.getElementById('barcodeScannerInput');
+    const product = products.find(p => p.barcode === barcode);
+    if (!product) {
+        showScanFeedback(`❌ المنتج ذو الباركود "${barcode}" غير موجود!`, 'error');
+        if (scanInput) { scanInput.style.border = '1px solid var(--danger)'; setTimeout(() => { if (scanInput) scanInput.style.border = ''; }, 500); }
+        scanInput.value = ''; scanInput.focus();
+        return;
+    }
+    if (product.stock <= 0) {
+        showScanFeedback(`⚠️ المنتج "${product.name}" غير متوفر بالمخزون!`, 'error');
+        scanInput.value = ''; scanInput.focus();
+        return;
+    }
+    addToCart(barcode, 1);
+    showScanFeedback(`✅ تم إضافة ${product.name} للسلة`, 'success');
+    const addedCard = document.querySelector(`.product-modern-card[data-barcode="${barcode}"]`);
+    if (addedCard) { addedCard.classList.add('scan-flash'); setTimeout(() => addedCard.classList.remove('scan-flash'), 300); }
+    scanInput.value = ''; scanInput.focus();
+}
+
+function showScanFeedback(message, type = 'success') {
+    const feedback = document.getElementById('scanFeedback');
+    if (!feedback) return;
+    feedback.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'}"></i> ${message}`;
+    feedback.className = `scan-feedback ${type === 'error' ? 'error' : ''}`;
+    setTimeout(() => { if (feedback) { feedback.innerHTML = ''; feedback.className = 'scan-feedback'; } }, 2000);
+}
+
+function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[m]); }
+
+// ========== بدء التشغيل ==========
 document.addEventListener('DOMContentLoaded', () => {
     loadData();
+    initBarcodeScanner();
     if (document.getElementById('productsGrid')) {
         const search = document.getElementById('productSearchInput');
-        if(search) search.addEventListener('input', e => renderModernProductsGrid(e.target.value));
+        if (search) search.addEventListener('input', e => renderModernProductsGrid(e.target.value));
         document.getElementById('checkoutBtn')?.addEventListener('click', checkout);
         document.getElementById('resetDayBtn')?.addEventListener('click', resetDaily);
     }
@@ -208,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 parseFloat(document.getElementById('prodPrice').value),
                 parseFloat(document.getElementById('prodStock').value)
             );
-            ['prodBarcode','prodName','prodCost','prodPrice','prodStock'].forEach(id => document.getElementById(id).value = '');
+            ['prodBarcode', 'prodName', 'prodCost', 'prodPrice', 'prodStock'].forEach(id => document.getElementById(id).value = '');
         });
         document.getElementById('searchProducts')?.addEventListener('input', () => renderProductsTable());
         renderProductsTable();

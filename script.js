@@ -1,9 +1,17 @@
-// ========== البيانات الأساسية ==========
+// ============================================================
+// نظام POS المتكامل - إدارة المنتجات + نقطة البيع
+// مع دعم Google Sheets (التجميع الذكي)
+// ============================================================
+
+// ---------- رابط Google Sheets API (غيّره إلى الرابط الخاص بك) ----------
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbwC2UVYwIXUH638VEpvuOU0b9YAX7g-R4Z-5qvrFDY26jKLDLVXPhNA7-aLYXcBgL2v4A/exec';
+
+// ---------- البيانات الأساسية ----------
 let products = [];
 let currentCart = [];
 let dailySales = [];
 
-// ========== تحميل البيانات المحفوظة ==========
+// ---------- تحميل البيانات المحفوظة ----------
 function loadData() {
     const savedProducts = localStorage.getItem('pos_products');
     const savedCart = localStorage.getItem('pos_cart');
@@ -28,7 +36,7 @@ function saveDaily() { localStorage.setItem('pos_dailySales', JSON.stringify(dai
 // ========== إدارة المنتجات ==========
 function addOrUpdateProduct(barcode, name, cost, price, stock) {
     if (!barcode || !name || cost <= 0 || price <= 0) {
-        showFormMessage('املأ جميع الحقول بشكل صحيح', 'red');
+        showFormMessage('املأ جميع الحقول بشكل صحيح (الأسعار أكبر من 0)', 'red');
         return false;
     }
     const index = products.findIndex(p => p.barcode === barcode);
@@ -56,11 +64,14 @@ function renderProductsTable() {
     if (!tbody) return;
     const search = document.getElementById('searchProducts')?.value.toLowerCase() || '';
     let filtered = products.filter(p => p.name.toLowerCase().includes(search) || p.barcode.includes(search));
-    if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="6">لا توجد منتجات</td><tr>'; return; }
+    if (!filtered.length) { tbody.innerHTML = '<tr><td colspan="6">لا توجد منتجات. أضف منتجاً جديداً باستخدام النموذج أعلاه.</td></tr>'; return; }
     tbody.innerHTML = filtered.map(p => `
         <tr>
-            <td>${escapeHtml(p.barcode)}</td><td>${escapeHtml(p.name)}</td>
-            <td>${p.cost.toFixed(2)}</td><td>${p.price.toFixed(2)}</td><td>${p.stock}</td>
+            <td>${escapeHtml(p.barcode)}</td>
+            <td>${escapeHtml(p.name)}</td>
+            <td>${p.cost.toFixed(2)}</td>
+            <td>${p.price.toFixed(2)}</td>
+            <td>${p.stock}</td>
             <td><button class="delete-prod" data-barcode="${p.barcode}"><i class="fas fa-trash"></i> حذف</button></td>
         </tr>
     `).join('');
@@ -98,13 +109,17 @@ function getIcon(name) {
     if (name.includes('خبز')) return 'fa-bread-slice';
     if (name.includes('حليب')) return 'fa-tint';
     if (name.includes('ماء')) return 'fa-water';
+    if (name.includes('بيض')) return 'fa-egg';
+    if (name.includes('جبن')) return 'fa-cheese';
     return 'fa-box';
 }
 
 // ========== السلة ==========
 function addToCart(barcode, qty = 1) {
     const product = products.find(p => p.barcode === barcode);
-    if (!product || product.stock < qty) { alert('المنتج غير متوفر'); return; }
+    if (!product) { alert('المنتج غير موجود!'); return; }
+    if (product.stock < qty) { alert(`الكمية المتوفرة فقط ${product.stock}`); return; }
+    
     const existing = currentCart.find(i => i.barcode === barcode);
     if (existing) {
         existing.quantity += qty;
@@ -112,7 +127,16 @@ function addToCart(barcode, qty = 1) {
         existing.totalProfit = existing.quantity * existing.profitPerUnit;
     } else {
         const profit = product.price - product.cost;
-        currentCart.push({ barcode, name: product.name, price: product.price, quantity: qty, cost: product.cost, profitPerUnit: profit, totalPrice: qty * product.price, totalProfit: qty * profit });
+        currentCart.push({
+            barcode: product.barcode,
+            name: product.name,
+            price: product.price,
+            quantity: qty,
+            cost: product.cost,
+            profitPerUnit: profit,
+            totalPrice: qty * product.price,
+            totalProfit: qty * profit
+        });
     }
     product.stock -= qty;
     saveProducts(); saveCart();
@@ -154,8 +178,16 @@ function renderCartModern() {
     if (badge) badge.innerText = currentCart.reduce((s, i) => s + i.quantity, 0);
     container.innerHTML = currentCart.map((item, idx) => `
         <div class="cart-item">
-            <div class="cart-item-info"><div class="cart-item-name">${escapeHtml(item.name)}</div><div class="cart-item-price">${item.price.toFixed(2)} ل.س</div></div>
-            <div class="cart-item-controls"><button class="qty-modern-btn" data-idx="${idx}" data-delta="-1">-</button><span class="qty-modern">${item.quantity}</span><button class="qty-modern-btn" data-idx="${idx}" data-delta="1">+</button><button class="cart-item-remove" data-idx="${idx}"><i class="fas fa-trash-alt"></i></button></div>
+            <div class="cart-item-info">
+                <div class="cart-item-name">${escapeHtml(item.name)}</div>
+                <div class="cart-item-price">${item.price.toFixed(2)} ل.س</div>
+            </div>
+            <div class="cart-item-controls">
+                <button class="qty-modern-btn" data-idx="${idx}" data-delta="-1">-</button>
+                <span class="qty-modern">${item.quantity}</span>
+                <button class="qty-modern-btn" data-idx="${idx}" data-delta="1">+</button>
+                <button class="cart-item-remove" data-idx="${idx}"><i class="fas fa-trash-alt"></i></button>
+            </div>
         </div>
     `).join('');
     document.querySelectorAll('.qty-modern-btn').forEach(btn => btn.addEventListener('click', (e) => { const idx = parseInt(btn.dataset.idx), delta = parseInt(btn.dataset.delta); changeQty(idx, delta); }));
@@ -170,14 +202,61 @@ function updateTotalsModern() {
     if (document.getElementById('finalTotalSpan')) document.getElementById('finalTotalSpan').innerText = total.toFixed(2);
 }
 
+// ========== Google Sheets: إرسال المنتج للتجميع الذكي ==========
+async function syncProductToSheets(product) {
+    const now = new Date();
+    const payload = {
+        barcode: String(product.barcode),
+        name: product.name,
+        quantity: product.quantity,
+        profit: product.totalProfit,
+        price: product.price,
+        cost: product.cost,
+        date: now.toLocaleDateString('ar-EG'),
+        time: now.toLocaleTimeString('ar-EG')
+    };
+    
+    try {
+        await fetch(GOOGLE_SHEET_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        console.log(`✅ تم تحديث المنتج ${product.name} في Google Sheets`);
+    } catch (error) {
+        console.error(`❌ فشل تحديث المنتج ${product.name}:`, error);
+    }
+}
+
+// ========== إنهاء البيع ==========
 function checkout() {
     if (!currentCart.length) { alert('السلة فارغة'); return; }
+    
     const total = currentCart.reduce((s, i) => s + i.totalPrice, 0);
     const profit = currentCart.reduce((s, i) => s + i.totalProfit, 0);
-    dailySales.push({ date: new Date().toLocaleString('ar-EG'), items: JSON.parse(JSON.stringify(currentCart)), total, profit });
+    
+    // حفظ الفاتورة محلياً لـ "مبيعات اليوم"
+    dailySales.push({
+        date: new Date().toLocaleString('ar-EG'),
+        items: JSON.parse(JSON.stringify(currentCart)),
+        total: total,
+        profit: profit
+    });
     saveDaily();
-    currentCart = []; saveCart();
-    renderCartModern(); updateTotalsModern(); renderSoldItemsModern();
+    
+    // --- إرسال كل منتج إلى Google Sheets للتجميع الذكي ---
+    currentCart.forEach(product => {
+        syncProductToSheets(product);
+    });
+    // ---------------------------------------------------
+    
+    currentCart = [];
+    saveCart();
+    renderCartModern();
+    updateTotalsModern();
+    renderSoldItemsModern();
+    
     alert(`✅ تم البيع\nالمجموع: ${total.toFixed(2)}\nالربح: ${profit.toFixed(2)}`);
 }
 
@@ -189,7 +268,16 @@ function renderSoldItemsModern() {
 }
 
 function resetDaily() {
-    if (confirm('مسح كل مبيعات اليوم والسلة الحالية؟')) { dailySales = []; currentCart = []; saveDaily(); saveCart(); renderCartModern(); updateTotalsModern(); renderSoldItemsModern(); if (document.getElementById('productsGrid')) renderModernProductsGrid(''); }
+    if (confirm('مسح كل مبيعات اليوم والسلة الحالية؟')) {
+        dailySales = [];
+        currentCart = [];
+        saveDaily();
+        saveCart();
+        renderCartModern();
+        updateTotalsModern();
+        renderSoldItemsModern();
+        if (document.getElementById('productsGrid')) renderModernProductsGrid('');
+    }
 }
 
 // ========== دعم قارئ الباركود USB والموبايل ==========

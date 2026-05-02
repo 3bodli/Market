@@ -2,7 +2,7 @@
 // نظام POS - بدون حقل المخزون
 // ============================================================
 
-const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxa2mhZMjjOP50DvYSmtKjQ093rJ6LANaTse-FnNU_sRZ1FLstP7a5MW2K2QTWTCzDZug/exec';
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbyXU0WLNGliURbPxGFO5z2FvIvVdF-e8yzALTY07XE8Gqb3qwZ7oPjnlJU0JTDl1op4jw/exec';
 
 let products = [];
 let currentCart = [];

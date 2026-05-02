@@ -1,0 +1,231 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: #eef2f7;
+    padding: 20px;
+}
+
+.app-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.main-header {
+    background: #1f3a4b;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.main-header h1 {
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-icon {
+    background: #2c5a74;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: 0.2s;
+}
+
+.btn-icon:hover {
+    background: #3e768f;
+}
+
+.pos-main {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 25px;
+}
+
+.card {
+    background: white;
+    border-radius: 28px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+.card h3 {
+    border-right: 5px solid #2c7da0;
+    padding-right: 15px;
+    margin-bottom: 20px;
+    color: #1e2f3a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.input-group {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.input-group input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #ccc;
+    border-radius: 40px;
+    font-size: 1rem;
+    transition: 0.2s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #2c7da0;
+    box-shadow: 0 0 0 3px rgba(44,125,160,0.2);
+}
+
+.btn-primary {
+    background: #2c7da0;
+    color: white;
+    border: none;
+    padding: 0 25px;
+    border-radius: 40px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary:hover {
+    background: #1f5e7a;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.cart-table th, .cart-table td {
+    padding: 12px 8px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.cart-table th {
+    background: #f1f5f9;
+    color: #0f2b3d;
+}
+
+.remove-btn {
+    background: #e53e3e;
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.totals-card .total-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+    font-size: 1.1rem;
+}
+
+.profit-row {
+    color: #2b6e3c;
+    font-weight: bold;
+    font-size: 1.3rem;
+    border-bottom: 1px dashed #cbd5e0;
+    padding-bottom: 12px;
+}
+
+.final-row {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #1a5d7a;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 2px solid #cbd5e0;
+}
+
+.btn-success {
+    background: #2b9348;
+    color: white;
+    width: 100%;
+    padding: 14px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 40px;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-success:hover {
+    background: #1f7a3b;
+}
+
+.btn-warning {
+    background: #ca8a04;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 40px;
+    width: 100%;
+    margin-top: 15px;
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-warning:hover {
+    background: #a16207;
+}
+
+.sold-list {
+    background: #f9fafb;
+    border-radius: 20px;
+    padding: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.empty-msg {
+    text-align: center;
+    color: #6c757d;
+    padding: 20px;
+}
+
+@media (max-width: 850px) {
+    .pos-main {
+        grid-template-columns: 1fr;
+    }
+}

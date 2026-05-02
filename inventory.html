@@ -14,7 +14,7 @@
     <nav class="glass-nav">
         <div class="logo">
             <i class="fas fa-boxes"></i>
-            <span>إدارة <span class="light">المخزون</span></span>
+            <span>إدارة <span class="light">المنتجات</span></span>
         </div>
         <div class="nav-actions">
             <a href="index.html" class="nav-btn"><i class="fas fa-cash-register"></i><span>نقطة البيع</span></a>
@@ -22,7 +22,7 @@
     </nav>
 
     <div class="inventory-container">
-        <!-- نموذج إضافة منتج -->
+        <!-- نموذج إضافة منتج (بدون مخزون) -->
         <div class="form-card-modern">
             <div class="form-header">
                 <i class="fas fa-plus-circle"></i>
@@ -45,16 +45,12 @@
                     <i class="fas fa-money-bill"></i>
                     <input type="number" id="prodPrice" placeholder="سعر البيع">
                 </div>
-                <div class="input-group-modern">
-                    <i class="fas fa-cubes"></i>
-                    <input type="number" id="prodStock" placeholder="الكمية المتوفرة" value="0">
-                </div>
                 <button id="saveProductBtn" class="gradient-btn"><i class="fas fa-save"></i> حفظ المنتج</button>
             </div>
             <div id="formMessage" class="form-message"></div>
         </div>
 
-        <!-- جدول المنتجات -->
+        <!-- جدول المنتجات (بدون عمود المخزون) -->
         <div class="table-card">
             <div class="table-header">
                 <i class="fas fa-list-ul"></i>
@@ -67,7 +63,7 @@
             <div class="table-responsive">
                 <table class="modern-table">
                     <thead>
-                        <tr><th>الباركود</th><th>الاسم</th><th>سعر الشراء</th><th>سعر البيع</th><th>المخزون</th><th>إجراء</th></tr>
+                        <tr><th>الباركود</th><th>الاسم</th><th>سعر الشراء</th><th>سعر البيع</th><th>إجراء</th></tr>
                     </thead>
                     <tbody id="productsBody"></tbody>
                 </table>

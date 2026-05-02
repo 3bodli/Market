@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>نظام البيع المتقدم | Point of Sale</title>
+    <title>نظام البيع المتقدم | POS</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -11,26 +11,30 @@
 <body>
 
 <div class="app-wrapper">
-    <!-- الشريط العلوي الحديث -->
+    <!-- الشريط العلوي -->
     <nav class="glass-nav">
         <div class="logo">
             <i class="fas fa-cash-register"></i>
             <span>نقطة البيع <span class="light">POS</span></span>
         </div>
         <div class="nav-actions">
-            <a href="inventory.html" class="nav-btn">
-                <i class="fas fa-boxes"></i>
-                <span>المخزون</span>
-            </a>
-            <button id="resetDayBtn" class="nav-btn danger">
-                <i class="fas fa-sync-alt"></i>
-                <span>مسح اليوم</span>
-            </button>
+            <a href="inventory.html" class="nav-btn"><i class="fas fa-boxes"></i><span>المخزون</span></a>
+            <button id="resetDayBtn" class="nav-btn danger"><i class="fas fa-sync-alt"></i><span>مسح اليوم</span></button>
         </div>
     </nav>
 
+    <!-- شريط المسح الضوئي (يدعم قارئ USB والكتابة اليدوية) -->
+    <div class="scan-bar">
+        <div class="scan-input-wrapper">
+            <i class="fas fa-qrcode"></i>
+            <input type="text" id="barcodeScannerInput" placeholder="امسح الباركود هنا أو اكتبه" autocomplete="off">
+            <button id="manualScanBtn" class="scan-btn"><i class="fas fa-search"></i> بحث</button>
+        </div>
+        <div id="scanFeedback" class="scan-feedback"></div>
+    </div>
+
     <div class="dashboard">
-        <!-- القسم الأيمن (أكبر) - المنتجات -->
+        <!-- قسم المنتجات -->
         <div class="products-panel">
             <div class="panel-header">
                 <h2><i class="fas fa-tags"></i> منتجات الماركت</h2>
@@ -40,52 +44,32 @@
                 </div>
             </div>
             <div id="productsGrid" class="products-modern-grid">
-                <!-- ستظهر المنتجات بشكل بطاقات جميلة -->
+                <!-- المنتجات تظهر هنا تلقائياً -->
             </div>
         </div>
 
-        <!-- القسم الأيسر - السلة والإجماليات -->
+        <!-- قسم السلة -->
         <div class="cart-panel">
             <div class="cart-header">
                 <i class="fas fa-shopping-basket"></i>
                 <h3>سلة البيع</h3>
                 <span id="cartCount" class="cart-badge">0</span>
             </div>
-
             <div class="cart-items-container" id="cartItemsContainer">
-                <div class="empty-cart">
-                    <i class="fas fa-box-open"></i>
-                    <p>السلة فارغة</p>
-                    <span>اضغط على أي منتج لإضافته</span>
-                </div>
+                <div class="empty-cart"><i class="fas fa-box-open"></i><p>السلة فارغة</p><span>اضغط على أي منتج لإضافته</span></div>
             </div>
-
             <div class="cart-summary">
-                <div class="summary-row">
-                    <span>المجموع الكلي</span>
-                    <span id="totalSalesSpan">0.00</span>
-                </div>
-                <div class="summary-row profit">
-                    <span>صافي الربح</span>
-                    <span id="totalProfitSpan">0.00</span>
-                </div>
-                <div class="summary-row total">
-                    <span>المطلوب من العميل</span>
-                    <span id="finalTotalSpan">0.00</span>
-                </div>
-                <button id="checkoutBtn" class="checkout-btn">
-                    <i class="fas fa-check-circle"></i> إتمام البيع
-                </button>
+                <div class="summary-row"><span>المجموع الكلي</span><span id="totalSalesSpan">0.00</span></div>
+                <div class="summary-row profit"><span>صافي الربح</span><span id="totalProfitSpan">0.00</span></div>
+                <div class="summary-row total"><span>المطلوب من العميل</span><span id="finalTotalSpan">0.00</span></div>
+                <button id="checkoutBtn" class="checkout-btn"><i class="fas fa-check-circle"></i> إتمام البيع</button>
             </div>
         </div>
     </div>
 
-    <!-- قسم مبيعات اليوم (أسفل الصفحة) -->
+    <!-- مبيعات اليوم -->
     <div class="daily-sales-bar">
-        <div class="sales-header">
-            <i class="fas fa-chart-simple"></i>
-            <h4>مبيعات اليوم</h4>
-        </div>
+        <div class="sales-header"><i class="fas fa-chart-simple"></i><h4>مبيعات اليوم</h4></div>
         <div id="soldItemsList" class="sales-list"></div>
     </div>
 </div>
